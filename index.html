@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Frontend Validation Engine | IPO Model</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+
+background:#f3f7fb;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+padding:30px;
+
+}
+
+.container{
+
+background:#fff;
+width:100%;
+max-width:520px;
+padding:30px;
+border-radius:15px;
+box-shadow:0 15px 35px rgba(0,0,0,.12);
+
+}
+
+h1{
+
+text-align:center;
+margin-bottom:8px;
+color:#1e3a8a;
+
+}
+
+.subtitle{
+
+text-align:center;
+color:#666;
+margin-bottom:25px;
+
+}
+
+.form-group{
+
+margin-bottom:18px;
+
+}
+
+label{
+
+display:block;
+font-weight:bold;
+margin-bottom:7px;
+
+}
+
+input{
+
+width:100%;
+padding:12px;
+border:1px solid #ccc;
+border-radius:8px;
+font-size:15px;
+outline:none;
+transition:.3s;
+
+}
+
+input:focus{
+
+border-color:#2563eb;
+
+}
+
+.error{
+
+color:#d32f2f;
+font-size:13px;
+margin-top:5px;
+min-height:18px;
+
+}
+
+.success{
+
+color:#16a34a;
+font-size:13px;
+margin-top:5px;
+min-height:18px;
+
+}
+
+.password-box{
+
+position:relative;
+
+}
+
+.toggle{
+
+position:absolute;
+right:12px;
+top:13px;
+cursor:pointer;
+font-size:13px;
+color:#2563eb;
+
+}
+
+.strength{
+
+margin-top:6px;
+font-size:13px;
+font-weight:bold;
+
+}
+
+button{
+
+width:100%;
+padding:14px;
+background:#2563eb;
+border:none;
+color:white;
+font-size:16px;
+cursor:pointer;
+border-radius:8px;
+margin-top:10px;
+transition:.3s;
+
+}
+
+button:hover{
+
+background:#1d4ed8;
+
+}
+
+pre{
+
+margin-top:20px;
+background:#111827;
+color:#00ff99;
+padding:15px;
+border-radius:8px;
+overflow:auto;
+font-size:13px;
+
+}
+
+.footer{
+
+margin-top:15px;
+text-align:center;
+font-size:13px;
+color:#777;
+
+}
+
+.valid{
+
+border:2px solid #16a34a;
+
+}
+
+.invalid{
+
+border:2px solid #d32f2f;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Validation Engine</h1>
+
+<p class="subtitle">
+Frontend Development Internship (IPO Model)
+</p>
+
+<form id="registrationForm" novalidate>
+
+<div class="form-group">
+
+<label for="fullname">Full Name</label>
+
+<input
+type="text"
+id="fullname"
+required
+aria-describedby="nameError">
+
+<p
+id="nameError"
+class="error"
+aria-live="polite">
+</p>
+
+</div>
+
+<div class="form-group">
+
+<label for="email">Email Address</label>
+
+<input
+type="email"
+id="email"
+required
+aria-describedby="emailError">
+
+<p
+id="emailError"
+class="error"
+aria-live="polite">
+</p>
+
+</div>
+
+<div class="form-group">
+
+<label for="password">Password</label>
+
+<div class="password-box">
+
+<input
+type="password"
+id="password"
+required
+aria-describedby="passwordError">
+
+<span class="toggle" id="togglePassword">
+Show
+</span>
+
+</div>
+
+<div
+class="strength"
+id="strength">
+</div>
+
+<p
+id="passwordError"
+class="error"
+aria-live="polite">
+</p>
+
+</div>
+
+<button type="submit">
+
+Register
+
+</button>
+
+</form>
+
+<pre id="output">
+
+Waiting for valid submission...
+
+</pre>
+
+<div class="footer">
+
+Semantic HTML5 • Regex • JavaScript • Accessibility
+
+</div>
+
+</div>
+
+<script>
+
+/***************************************************
+ FRONTEND VALIDATION ENGINE
+ IPO MODEL
+****************************************************/
+
+const form=document.getElementById("registrationForm");
+
+const fullname=document.getElementById("fullname");
+const email=document.getElementById("email");
+const password=document.getElementById("password");
+
+const output=document.getElementById("output");
+
+const strength=document.getElementById("strength");
+
+const toggle=document.getElementById("togglePassword");
+
+/***************************************************
+REGEX PATTERNS
+****************************************************/
+
+const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const passwordRegex=
+/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+/***************************************************
+SHOW/HIDE PASSWORD
+****************************************************/
+
+toggle.addEventListener("click",()=>{
+
+if(password.type==="password"){
+
+password.type="text";
+toggle.textContent="Hide";
+
+}else{
+
+password.type="password";
+toggle.textContent="Show";
+
+}
+
+});
+
+/***************************************************
+PASSWORD STRENGTH
+****************************************************/
+
+password.addEventListener("input",()=>{
+
+const value=password.value;
+
+if(value.length<6){
+
+strength.textContent="Weak Password";
+strength.style.color="red";
+
+}
+else if(value.length<8){
+
+strength.textContent="Medium Password";
+strength.style.color="orange";
+
+}
+else if(passwordRegex.test(value)){
+
+strength.textContent="Strong Password";
+strength.style.color="green";
+
+}
+else{
+
+strength.textContent="Needs Uppercase, Number & Symbol";
+strength.style.color="#b45309";
+
+}
+
+});
+
+/***************************************************
+REAL TIME VALIDATION
+****************************************************/
+
+fullname.addEventListener("blur",validateName);
+email.addEventListener("blur",validateEmail);
+password.addEventListener("blur",validatePassword);
+
+/***************************************************
+NAME
+****************************************************/
+
+function validateName(){
+
+if(fullname.value.trim()===""){
+
+showError(fullname,"nameError","Full name is required.");
+
+return false;
+
+}
+
+clearError(fullname,"nameError");
+
+return true;
+
+}
+
+/***************************************************
+EMAIL
+****************************************************/
+
+function validateEmail(){
+
+if(!emailRegex.test(email.value)){
+
+showError(email,"emailError","Invalid email format.");
+
+return false;
+
+}
+
+clearError(email,"emailError");
+
+return true;
+
+}
+
+/***************************************************
+PASSWORD
+****************************************************/
+
+function validatePassword(){
+
+if(!passwordRegex.test(password.value)){
+
+showError(
+password,
+"passwordError",
+"Minimum 8 characters with uppercase, lowercase, number and special character."
+);
+
+return false;
+
+}
+
+clearError(password,"passwordError");
+
+return true;
+
+}
+
+/***************************************************
+ERROR HANDLER
+****************************************************/
+
+function showError(input,id,message){
+
+document.getElementById(id).textContent=message;
+
+input.classList.remove("valid");
+
+input.classList.add("invalid");
+
+input.setAttribute("aria-invalid","true");
+
+}
+
+function clearError(input,id){
+
+document.getElementById(id).textContent="";
+
+input.classList.remove("invalid");
+
+input.classList.add("valid");
+
+input.setAttribute("aria-invalid","false");
+
+}
+
+/***************************************************
+SUBMIT
+****************************************************/
+
+form.addEventListener("submit",(event)=>{
+
+/* PHASE 2
+Prevent browser refresh */
+
+event.preventDefault();
+
+const validName=validateName();
+const validEmail=validateEmail();
+const validPassword=validatePassword();
+
+if(validName && validEmail && validPassword){
+
+const data={
+
+fullname:fullname.value.trim(),
+
+email:email.value.trim(),
+
+password:password.value
+
+};
+
+/***************************************************
+PHASE 4
+JSON OUTPUT
+****************************************************/
+
+output.textContent=
+JSON.stringify(data,null,4);
+
+alert("Validation Successful!");
+
+form.reset();
+
+strength.textContent="";
+
+document
+.querySelectorAll("input")
+.forEach(i=>i.classList.remove("valid"));
+
+}
+
+});
+
+</script>
+
+</body>
+</html>
